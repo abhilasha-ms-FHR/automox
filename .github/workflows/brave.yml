@@ -30,15 +30,6 @@ jobs:
           ls -lR "${{ github.workspace }}/mount/Brave Browser.app/Contents" > contents_directory.txt
           cat contents_directory.txt
 
-      - name: Output Info.plist Contents
-        run: |
-          INFO_PLIST_PATH="${{ github.workspace }}/mount/Brave Browser.app/Contents/Info.plist"
-          if [ -f "$INFO_PLIST_PATH" ]; then
-            echo "Info.plist found at $INFO_PLIST_PATH"
-            cat "$INFO_PLIST_PATH"
-          else
-            echo "Info.plist not found at $INFO_PLIST_PATH"
-
       - name: Extract CFBundleShortVersionString
         run: |
           INFO_PLIST_PATH="${{ github.workspace }}/mount/Brave Browser.app/Contents/Info.plist"
