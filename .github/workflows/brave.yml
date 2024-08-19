@@ -22,7 +22,6 @@ jobs:
       - name: Get Plist Version
         id: get-plist-version
         run: |
-"Brave Browser"/"Brave Browser.app"/Contents/Info.plist
           BRAVEVER=$(defaults read /Volumes/Brave Browser\ Brave Browser.app/Contents/Info.plist CFBundleShortVersionString)
           #cat /Volumes/Brave Browser\ Brave Browser.app/Contents/Info.plist
           echo "Brave Version: $BRAVEVER"
