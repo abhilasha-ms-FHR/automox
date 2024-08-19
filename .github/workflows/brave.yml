@@ -1,10 +1,10 @@
-name: List Framework Versions
+name: Read Info.plist
 
 on: 
   workflow_dispatch:
 
 jobs:
-  list-framework-versions:
+  read-info-plist:
     runs-on: macos-latest
     steps:
       - name: Download DMG file
@@ -20,9 +20,23 @@ jobs:
         run: |
           hdiutil attach -mountpoint ${{ github.workspace }}/mount Brave-Browser.dmg
 
-      - name: List Contents of Framework Versions
+      - name: List Contents of Mount Point
         run: |
-          ls -lR ${{ github.workspace }}/mount/Brave-Browser.app/Contents/Frameworks/Brave\ Browser\ Framework.framework/Versions/
+          ls -lR ${{ github.workspace }}/mount > mount_contents.txt
+          cat mount_contents.txt
+
+      - name: Find Info.plist
+        run: |
+          find ${{ github.workspace }}/mount -name Info.plist
+
+      - name: Output Info.plist Contents
+        run: |
+          INFO_PLIST_PATH=$(find ${{ github.workspace }}/mount -name Info.plist)
+          if [ -f "$INFO_PLIST_PATH" ]; then
+            cat "$INFO_PLIST_PATH"
+          else
+            echo "Info.plist not found"
+          fi
 
       - name: Unmount DMG file
         run: |
