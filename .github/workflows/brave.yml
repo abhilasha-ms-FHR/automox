@@ -25,17 +25,19 @@ jobs:
           ls -lR ${{ github.workspace }}/mount > mount_contents.txt
           cat mount_contents.txt
 
-      - name: Find Info.plist
+      - name: List Contents of Contents Directory
         run: |
-          find ${{ github.workspace }}/mount/Brave%20Browser.app/Contents -name Info.plist
+          ls -lR "${{ github.workspace }}/mount/Brave Browser.app/Contents" > contents_directory.txt
+          cat contents_directory.txt
 
       - name: Output Info.plist Contents
         run: |
-          INFO_PLIST_PATH=$(find ${{ github.workspace }}/mount -name Info.plist)
+          INFO_PLIST_PATH="${{ github.workspace }}/mount/Brave Browser.app/Contents/Info.plist"
           if [ -f "$INFO_PLIST_PATH" ]; then
+            echo "Info.plist found at $INFO_PLIST_PATH"
             cat "$INFO_PLIST_PATH"
           else
-            echo "Info.plist not found"
+            echo "Info.plist not found at $INFO_PLIST_PATH"
           fi
 
       - name: Unmount DMG file
