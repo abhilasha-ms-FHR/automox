@@ -1,27 +1,33 @@
-name: Get-Latest-Brave-Version-Mac
+name: Get DMG Version
 
-on:
+on: 
   workflow_dispatch:
 
 jobs:
-  hello-world:
-    name: Get Latest Brave Version from Mac DMG
-    runs-on:
-      - macos-latest
-    permissions:
-      contents: write
+  get-version:
+    runs-on: macos-latest
     steps:
-      - name: Download Brave DMG
-        id: download-brave
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Download DMG file
         run: |
-          curl -o /tmp/brave.dmg https://laptop-updates.brave.com/latest/osx/Brave-Browser.dmg
-      - name: Mount Brave DMG
-        id: mount-brave
+          curl -L -o Brave-Browser.dmg https://laptop-updates.brave.com/latest/osx/Brave-Browser.dmg
+
+      - name: Mount DMG file
         run: |
-          hdiutil attach /tmp/brave.dmg 
-      - name: Get Plist Version
-        id: get-plist-version
+          hdiutil attach -mountpoint /Volumes/Brave-Browser /path/to/Brave-Browser.dmg
+          
+      - name: Get version from DMG
         run: |
-          BRAVEVER=$(defaults read /Volumes/Brave Browser\ Brave Browser.app/Contents/Info.plist CFBundleShortVersionString)
-          #cat /Volumes/Brave Browser\ Brave Browser.app/Contents/Info.plist
-          echo "Brave Version: $BRAVEVER"
+          # Assuming the version information is in the app's Info.plist file
+          VERSION=$(defaults read /Volumes/Brave-Browser/Brave-Browser.app/Contents/Info.plist CFBundleShortVersionString)
+          echo "Version: $VERSION"
+          
+      - name: Unmount DMG file
+        run: |
+          hdiutil detach /Volumes/Brave-Browser
+
+      - name: Cleanup
+        run: |
+          rm Brave-Browser.dmg
