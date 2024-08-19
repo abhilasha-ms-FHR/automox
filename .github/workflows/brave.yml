@@ -38,6 +38,15 @@ jobs:
             cat "$INFO_PLIST_PATH"
           else
             echo "Info.plist not found at $INFO_PLIST_PATH"
+
+      - name: Extract CFBundleShortVersionString
+        run: |
+          INFO_PLIST_PATH="${{ github.workspace }}/mount/Brave Browser.app/Contents/Info.plist"
+          if [ -f "$INFO_PLIST_PATH" ]; then
+            echo "Extracting CFBundleShortVersionString from $INFO_PLIST_PATH"
+            plutil -extract CFBundleShortVersionString xml1 -o - "$INFO_PLIST_PATH" | grep "<string>" | sed -e 's/<string>//' -e 's/<\/string>//'
+          else
+            echo "Info.plist not found at $INFO_PLIST_PATH"
           fi
 
       - name: Unmount DMG file
