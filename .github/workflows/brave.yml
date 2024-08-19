@@ -14,8 +14,7 @@ jobs:
       - name: Download Brave DMG
         id: download-brave
         run: |
-          curl -o /tmp/brave.dmg 
-https://laptop-updates.brave.com/latest/osx/Brave-Browser.dmg
+          curl -o /tmp/brave.dmg https://laptop-updates.brave.com/latest/osx/Brave-Browser.dmg
       - name: Mount Brave DMG
         id: mount-brave
         run: |
