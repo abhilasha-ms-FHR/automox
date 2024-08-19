@@ -12,20 +12,24 @@ jobs:
           curl -L -o Brave-Browser.dmg https://laptop-updates.brave.com/latest/osx/Brave-Browser.dmg
           ls -l Brave-Browser.dmg
 
+      - name: Create Mount Directory
+        run: |
+          mkdir -p ${{ github.workspace }}/mount
+
       - name: Mount DMG file
         run: |
-          mkdir -p /Volumes/Brave-Browser
-          hdiutil attach -mountpoint /Volumes/Brave-Browser Brave-Browser.dmg
+          hdiutil attach -mountpoint ${{ github.workspace }}/mount Brave-Browser.dmg
           
       - name: Get version from DMG
         run: |
-          VERSION=$(defaults read /Volumes/Brave-Browser/Brave-Browser.app/Contents/Info.plist CFBundleShortVersionString)
+          VERSION=$(defaults read ${{ github.workspace }}/mount/Brave-Browser.app/Contents/Info.plist CFBundleShortVersionString)
           echo "Version: $VERSION"
           
       - name: Unmount DMG file
         run: |
-          hdiutil detach /Volumes/Brave-Browser
+          hdiutil detach ${{ github.workspace }}/mount
 
       - name: Cleanup
         run: |
           rm -f Brave-Browser.dmg
+          rm -rf ${{ github.workspace }}/mount
