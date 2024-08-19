@@ -27,7 +27,7 @@ jobs:
 
       - name: Find Info.plist
         run: |
-          find ${{ github.workspace }}/mount -name Info.plist
+          find ${{ github.workspace }}/mount/Brave Browser.app/Contents -name Info.plist
 
       - name: Output Info.plist Contents
         run: |
