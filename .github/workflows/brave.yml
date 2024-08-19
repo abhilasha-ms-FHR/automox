@@ -7,20 +7,18 @@ jobs:
   get-version:
     runs-on: macos-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
       - name: Download DMG file
         run: |
           curl -L -o Brave-Browser.dmg https://laptop-updates.brave.com/latest/osx/Brave-Browser.dmg
+          ls -l Brave-Browser.dmg
 
       - name: Mount DMG file
         run: |
-          hdiutil attach -mountpoint /Volumes/Brave-Browser /path/to/Brave-Browser.dmg
+          mkdir -p /Volumes/Brave-Browser
+          hdiutil attach -mountpoint /Volumes/Brave-Browser Brave-Browser.dmg
           
       - name: Get version from DMG
         run: |
-          # Assuming the version information is in the app's Info.plist file
           VERSION=$(defaults read /Volumes/Brave-Browser/Brave-Browser.app/Contents/Info.plist CFBundleShortVersionString)
           echo "Version: $VERSION"
           
@@ -30,4 +28,4 @@ jobs:
 
       - name: Cleanup
         run: |
-          rm Brave-Browser.dmg
+          rm -f Brave-Browser.dmg
