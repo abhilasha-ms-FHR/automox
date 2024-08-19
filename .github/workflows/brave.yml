@@ -1,16 +1,15 @@
-name: Get DMG Version
+name: List Info.plist Keys
 
 on: 
   workflow_dispatch:
 
 jobs:
-  get-version:
+  list-info-plist-keys:
     runs-on: macos-latest
     steps:
       - name: Download DMG file
         run: |
           curl -L -o Brave-Browser.dmg https://laptop-updates.brave.com/latest/osx/Brave-Browser.dmg
-          ls -l Brave-Browser.dmg
 
       - name: Create Mount Directory
         run: |
@@ -24,10 +23,9 @@ jobs:
         run: |
           ls -lR ${{ github.workspace }}/mount
 
-      - name: Get version from DMG
+      - name: List All Keys in Info.plist
         run: |
-          VERSION=$(defaults read ${{ github.workspace }}/mount/Brave-Browser.app/Contents/Info.plist CFBundleShortVersionString 2>/dev/null || echo "Version info not found")
-          echo "Version: $VERSION"
+          defaults read ${{ github.workspace }}/mount/Brave-Browser.app/Contents/Info.plist
 
       - name: Unmount DMG file
         run: |
