@@ -1,10 +1,10 @@
-name: List Info.plist Keys
+name: Read Info.plist
 
 on: 
   workflow_dispatch:
 
 jobs:
-  list-info-plist-keys:
+  read-info-plist:
     runs-on: macos-latest
     steps:
       - name: Download DMG file
@@ -24,9 +24,14 @@ jobs:
         run: |
           ls -lR ${{ github.workspace }}/mount
 
-      - name: Convert Info.plist to XML
+      - name: Output Info.plist Contents
         run: |
-          plutil -convert xml1 -o - ${{ github.workspace }}/mount/Brave-Browser.app/Contents/Info.plist || echo "Info.plist not found"
+          INFO_PLIST_PATH="${{ github.workspace }}/mount/Brave-Browser.app/Contents/Info.plist"
+          if [ -f "$INFO_PLIST_PATH" ]; then
+            cat "$INFO_PLIST_PATH"
+          else
+            echo "Info.plist not found at $INFO_PLIST_PATH"
+          fi
 
       - name: Unmount DMG file
         run: |
