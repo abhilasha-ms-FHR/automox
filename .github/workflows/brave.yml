@@ -19,12 +19,16 @@ jobs:
       - name: Mount DMG file
         run: |
           hdiutil attach -mountpoint ${{ github.workspace }}/mount Brave-Browser.dmg
-          
+
+      - name: List Contents of Mount Point
+        run: |
+          ls -lR ${{ github.workspace }}/mount
+
       - name: Get version from DMG
         run: |
-          VERSION=$(defaults read ${{ github.workspace }}/mount/Brave-Browser.app/Contents/Info.plist CFBundleShortVersionString)
+          VERSION=$(defaults read ${{ github.workspace }}/mount/Brave-Browser.app/Contents/Info.plist CFBundleShortVersionString 2>/dev/null || echo "Version info not found")
           echo "Version: $VERSION"
-          
+
       - name: Unmount DMG file
         run: |
           hdiutil detach ${{ github.workspace }}/mount
