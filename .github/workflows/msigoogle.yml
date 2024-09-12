@@ -1,0 +1,49 @@
+name: Get MSI Info
+
+on: [push, pull_request]
+
+jobs:
+  extract-msi-info:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Download MSI
+      run: |
+        Invoke-WebRequest -Uri "https://dl.google.com/dl/chrome/install/googlechromestandaloneenterprise64.msi" -OutFile "googlechrome.msi"
+
+    - name: Get MSI Info
+      id: get-msi-info
+      shell: pwsh
+      run: |
+        $msiPath = "googlechrome.msi"
+        $msi = New-Object -ComObject WindowsInstaller.Installer
+        $database = $msi.GetType().InvokeMember("OpenDatabase", "InvokeMethod", $null, $msi, @($msiPath, 0))
+
+        # Get Product Version
+        $query = "SELECT Value FROM Property WHERE Property='ProductVersion'"
+        $view = $database.GetType().InvokeMember("OpenView", "InvokeMethod", $null, $database, ($query))
+        $view.GetType().InvokeMember("Execute", "InvokeMethod", $null, $view, $null)
+        $record = $view.GetType().InvokeMember("Fetch", "InvokeMethod", $null, $view, $null)
+        $version = $record.GetType().InvokeMember("StringData", "GetProperty", $null, $record, 1)
+
+        # Get Product Description (if available)
+        $description = ""
+        try {
+          $summaryInfo = $database.GetType().InvokeMember("SummaryInformation", "GetProperty", $null, $database, 0)
+          $description = $summaryInfo.GetType().InvokeMember("Property", "GetProperty", $null, $summaryInfo, 2)  # PIDSIComments (2) is typically used for description
+        } catch {
+          Write-Output "No description found in the MSI file."
+        }
+
+        Write-Output "MSI Version: $version"
+        Write-Output "MSI Description: $description"
+        echo "::set-output name=msi_version::$version"
+        echo "::set-output name=msi_description::$description"
+
+    - name: Display extracted info
+      run: |
+        echo "The extracted MSI version is ${{ steps.get-msi-info.outputs.msi_version }}"
+        echo "The extracted MSI description is ${{ steps.get-msi-info.outputs.msi_description }}"
