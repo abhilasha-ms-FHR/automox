@@ -23,7 +23,6 @@ jobs:
 
     - name: Extract and Display All Properties
       run: |
-        $msiPath = "googlechromestandaloneenterprise64.msi"
         function Get-MsiTable {
             param([string]$Path, [string]$Table)
             $database = New-Object -ComObject WindowsInstaller.Installer
@@ -32,19 +31,33 @@ jobs:
             $view.Execute()
             $columns = @()
             $view.ColumnInfo | ForEach-Object {
-                $columns += $_.Name
+                if ($_.Name -and $_.Name -ne '') {
+                    $columns += $_.Name
+                }
+            }
+            if ($columns.Count -eq 0) {
+                throw "No columns found in the MSI table $Table"
             }
             $records = @()
             while ($record = $view.Fetch()) {
                 $item = New-Object PSObject
                 for ($i = 1; $i -le $columns.Count; $i++) {
-                    $item | Add-Member -MemberType NoteProperty -Name $columns[$i - 1] -Value $record.StringData($i)
+                    # Add defensive coding to handle potential null values
+                    $columnName = $columns[$i - 1]
+                    if ($null -ne $columnName -and $columnName -ne '') {
+                        $item | Add-Member -MemberType NoteProperty -Name $columnName -Value $record.StringData($i)
+                    }
                 }
                 $records += $item
             }
             return $records
         }
 
-        $msi = Get-MsiTable -Path $msiPath -Table Property
-        $msi | Format-Table -AutoSize | Out-String | Write-Host
+        $msiPath = "googlechromestandaloneenterprise64.msi"
+        try {
+            $msi = Get-MsiTable -Path $msiPath -Table Property
+            $msi | Format-Table -AutoSize | Out-String | Write-Host
+        } catch {
+            Write-Host "Error extracting properties: $_"
+        }
       shell: pwsh
