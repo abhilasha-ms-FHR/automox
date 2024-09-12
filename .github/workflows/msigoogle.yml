@@ -33,9 +33,18 @@ jobs:
         $description = ""
         try {
           $summaryInfo = $database.GetType().InvokeMember("SummaryInformation", "GetProperty", $null, $database, 0)
-          Write-Output "MSI Description: $summaryInfo"
-          echo "::set-output name=msi_description::$summaryInfo"
           $description = $summaryInfo.GetType().InvokeMember("Property", "GetProperty", $null, $summaryInfo, 2)  # PIDSIComments (2) is typically used for description
+          $description1 = $summaryInfo.GetType().InvokeMember("Property", "GetProperty", $null, $summaryInfo, 1)
+          $description2 = $summaryInfo.GetType().InvokeMember("Property", "GetProperty", $null, $summaryInfo, 3)
+          $description3 = $summaryInfo.GetType().InvokeMember("Property", "GetProperty", $null, $summaryInfo, 4)
+          Write-Output "MSI Description: $description1"
+          echo "::set-output name=msi_description::$description1"
+          Write-Output "MSI Description: $description2"
+          echo "::set-output name=msi_description::$description2"
+          Write-Output "MSI Description: $description3"
+          echo "::set-output name=msi_description::$description3"
+          
+          
         } catch {
           Write-Output "No description found in the MSI file."
         }
