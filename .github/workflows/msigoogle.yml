@@ -33,6 +33,8 @@ jobs:
         $description = ""
         try {
           $summaryInfo = $database.GetType().InvokeMember("SummaryInformation", "GetProperty", $null, $database, 0)
+          Write-Output "MSI Description: $summaryInfo"
+          echo "::set-output name=msi_description::$summaryInfo"
           $description = $summaryInfo.GetType().InvokeMember("Property", "GetProperty", $null, $summaryInfo, 2)  # PIDSIComments (2) is typically used for description
         } catch {
           Write-Output "No description found in the MSI file."
@@ -42,7 +44,7 @@ jobs:
         Write-Output "MSI Description: $description"
         echo "::set-output name=msi_version::$version"
         echo "::set-output name=msi_description::$description"
-
+        
     - name: Display extracted info
       run: |
         echo "The extracted MSI version is ${{ steps.get-msi-info.outputs.msi_version }}"
